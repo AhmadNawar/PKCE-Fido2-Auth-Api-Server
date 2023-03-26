@@ -49,7 +49,7 @@ namespace IdentityServer
                     ClientId="pkce_client",
                     AllowedGrantTypes=GrantTypes.Code,
                     RequireClientSecret = false,
-                    RedirectUris={"https://localhost:5002/signin-oidc"},
+                    RedirectUris={"https://localhost:5001/callback"},
                     PostLogoutRedirectUris={"https://localhost:5002/signout-callback-oidc"},
                     AllowedScopes=new List<string>
                     {

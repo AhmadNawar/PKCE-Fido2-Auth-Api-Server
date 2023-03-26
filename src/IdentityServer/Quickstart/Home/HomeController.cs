@@ -61,5 +61,10 @@ namespace IdentityServerHost.Quickstart.UI
 
             return View("Error", vm);
         }
+        [Route("/callback")]
+        public IActionResult AutthenticationCallback()
+        {
+            return View("Callback");
+        }
     }
 }

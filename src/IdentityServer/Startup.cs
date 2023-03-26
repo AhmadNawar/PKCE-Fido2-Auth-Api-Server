@@ -101,7 +101,7 @@ namespace IdentityServer
             .AddCookie("Cookies")
             .AddOpenIdConnect("oidc", options =>
             {
-                options.Authority = "https://3431-78-163-115-220.eu.ngrok.io";
+                options.Authority = "https://localhost:5001";
                 options.ClientId = "pcke_client";
                 options.ClientSecret = "secret";
                 options.ResponseType = "code";
@@ -130,6 +130,12 @@ namespace IdentityServer
             app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
             app.UseIdentityServer();
+
+            app.Use(async (context, next) => {
+                context.Response.Headers.Add("Content-Security-Policy", "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;");
+
+                await next();
+            });
 
             // uncomment, if you want to add MVC
             app.UseAuthorization();

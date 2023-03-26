@@ -1,13 +1,13 @@
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var CorsPolicyName = "accept-all";
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
 {
-    options.Authority = "https://3431-78-163-115-220.eu.ngrok.io";
+    options.Authority = "https://localhost:5001";
 
     options.TokenValidationParameters = new TokenValidationParameters
     {
@@ -18,6 +18,14 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer("Bearer", options =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: CorsPolicyName,
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin().AllowAnyHeader();
+                      });
+});
 
 var app = builder.Build();
 
@@ -27,12 +35,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors(CorsPolicyName);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
