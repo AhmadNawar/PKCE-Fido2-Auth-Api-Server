@@ -17,6 +17,7 @@ using IdentityServer4;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
 using static Fido2NetLib.AuthenticatorAssertionRawResponse;
+using IdentityServer.Entities;
 
 namespace IdentityServer.Fido2
 {
@@ -27,8 +28,8 @@ namespace IdentityServer.Fido2
         public static IMetadataService _mds;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly Fido2Storage _fido2Storage;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<QRCodeUser> _userManager;
+        private readonly SignInManager<QRCodeUser> _signInManager;
         private readonly IOptions<Fido2Configuration> _optionsFido2Configuration;
         private readonly IEventService _events;
 
@@ -36,8 +37,8 @@ namespace IdentityServer.Fido2
             IEventService events,
             IIdentityServerInteractionService interaction,
             Fido2Storage fido2Storage,
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<QRCodeUser> userManager,
+            SignInManager<QRCodeUser> signInManager,
             IOptions<Fido2Configuration> optionsFido2Configuration)
         {
             _userManager = userManager;

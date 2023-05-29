@@ -5,10 +5,13 @@
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -19,6 +22,7 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger _logger;
+        public const string ChallangeSessionKeyName = "_Challange";
 
         public HomeController(IIdentityServerInteractionService interaction, IWebHostEnvironment environment, ILogger<HomeController> logger)
         {
@@ -61,10 +65,40 @@ namespace IdentityServerHost.Quickstart.UI
 
             return View("Error", vm);
         }
+
         [Route("/callback")]
         public IActionResult AutthenticationCallback()
         {
             return View("Callback");
+        }
+
+        [Route("/generate-qr-challange")]
+        [HttpGet]
+        public IActionResult GenerateQRChallange()
+        {
+            byte[] randomBytes = new byte[128];
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(randomBytes);
+            }
+
+            string base64String = Convert.ToBase64String(randomBytes);
+
+            Random random = new Random();
+            int length = random.Next(43, 128);
+            var challange = base64String.Substring(0, length);
+
+            HttpContext.Session.SetString(ChallangeSessionKeyName, challange);
+
+            return new OkObjectResult(new {code = challange });
+        }
+        [Route("/get-challange")]
+        [HttpGet]
+        public IActionResult GeChallange()
+        {
+            var challange = HttpContext.Session.GetString(ChallangeSessionKeyName);
+
+            return Ok(challange);
         }
     }
 }

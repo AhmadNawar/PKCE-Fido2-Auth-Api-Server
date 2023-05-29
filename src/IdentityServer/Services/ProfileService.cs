@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityServer.Entities;
+using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace IdentityServer.Services
 {
     public class ProfileService : IProfileService
     {
-        private readonly IUserClaimsPrincipalFactory<IdentityUser> _claimsFactory;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IUserClaimsPrincipalFactory<QRCodeUser> _claimsFactory;
+        private readonly UserManager<QRCodeUser> _userManager;
 
-        public ProfileService(UserManager<IdentityUser> userManager, IUserClaimsPrincipalFactory<IdentityUser> claimsFactory)
+        public ProfileService(UserManager<QRCodeUser> userManager, IUserClaimsPrincipalFactory<QRCodeUser> claimsFactory)
         {
             _userManager = userManager;
             _claimsFactory = claimsFactory;

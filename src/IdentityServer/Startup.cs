@@ -20,6 +20,7 @@ using IdentityServer.Fido2;
 using System;
 using Microsoft.AspNetCore.CookiePolicy;
 using IdentityServer.Services;
+using IdentityServer.Entities;
 
 namespace IdentityServer
 {
@@ -44,9 +45,8 @@ namespace IdentityServer
            options.UseSqlServer(
                Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services.AddDefaultIdentity<QRCodeUser>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -61,7 +61,7 @@ namespace IdentityServer
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients)
-                .AddAspNetIdentity<IdentityUser>()
+                .AddAspNetIdentity<QRCodeUser>()
                 .AddTestUsers(Config.Users)
                 .AddProfileService<ProfileService>();
 
@@ -75,7 +75,7 @@ namespace IdentityServer
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(2);
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SameSite = SameSiteMode.None;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -144,6 +144,7 @@ namespace IdentityServer
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+               
             });
         }
 

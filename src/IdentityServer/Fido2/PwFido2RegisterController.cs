@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using static Fido2NetLib.Fido2;
+using IdentityServer.Entities;
 
 namespace IdentityServer.Fido2
 {
@@ -18,12 +19,12 @@ namespace IdentityServer.Fido2
         private readonly Fido2NetLib.Fido2 _lib;
         public static IMetadataService _mds;
         private readonly Fido2Storage _fido2Storage;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<QRCodeUser> _userManager;
         private readonly IOptions<Fido2Configuration> _optionsFido2Configuration;
 
         public PwFido2RegisterController(
        Fido2Storage fido2Storage,
-       UserManager<IdentityUser> userManager,
+       UserManager<QRCodeUser> userManager,
        IOptions<Fido2Configuration> optionsFido2Configuration)
         {
             _userManager = userManager;
@@ -170,9 +171,9 @@ namespace IdentityServer.Fido2
             }
         }
 
-        private async Task<IdentityUser> CreateUser(string userEmail)
+        private async Task<QRCodeUser> CreateUser(string userEmail)
         {
-            var user = new IdentityUser { UserName = userEmail, Email = userEmail, EmailConfirmed = true };
+            var user = new QRCodeUser { UserName = userEmail, Email = userEmail, EmailConfirmed = true };
             var result = await _userManager.CreateAsync(user);
             if (result.Succeeded)
             {
