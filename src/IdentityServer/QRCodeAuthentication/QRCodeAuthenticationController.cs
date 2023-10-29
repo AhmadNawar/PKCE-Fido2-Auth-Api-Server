@@ -71,8 +71,6 @@ namespace IdentityServer.QRCodeAuthentication
 
             await _context.SaveChangesAsync();
 
-            //HttpContext.Session.SetString(ChallangeSessionKeyName, challange);
-
             return new OkObjectResult(new { code = challange, sessionId = randomSessionID });
         }
 

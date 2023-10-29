@@ -46,7 +46,7 @@
 				});
 
 				// Start polling authentication status
-				pollInterval = pollAuthenticationStatus(username, sessionId);
+				//pollInterval = pollAuthenticationStatus(username, sessionId);
 			}).catch(error => {
 				console.warn(error);
             });

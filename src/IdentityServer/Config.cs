@@ -3,6 +3,7 @@
 
 
 using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System;
@@ -16,7 +17,8 @@ namespace IdentityServer
         public static IEnumerable<IdentityResource> IdentityResources =>
             new IdentityResource[]
             {
-                new IdentityResources.OpenId()
+                new IdentityResources.OpenId(),
+                    new IdentityResources.Profile(),
             };
 
         public static IEnumerable<ApiScope> ApiScopes =>
@@ -67,6 +69,27 @@ namespace IdentityServer
                     {
                         "api1"
                     }
+                },
+                // OpenID Connect implicit flow client (MVC)
+                new Client
+                {
+                    ClientId = "mvc",
+                    ClientName = "MVC Client",
+                    AllowedGrantTypes = GrantTypes.Implicit,
+
+                    // where to redirect to after login
+                    RedirectUris = { "https://localhost:44328/signin-oidc" },
+
+                    // where to redirect to after logout
+                    PostLogoutRedirectUris = { "http://localhost:44328/signout-callback-oidc" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile
+                    },
+
+                    RequireConsent = false
                 }
             };
 

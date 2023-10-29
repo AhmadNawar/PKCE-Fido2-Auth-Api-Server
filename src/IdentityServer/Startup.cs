@@ -21,6 +21,9 @@ using System;
 using Microsoft.AspNetCore.CookiePolicy;
 using IdentityServer.Services;
 using IdentityServer.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using IdentityServer4.AspNetIdentity;
 
 namespace IdentityServer
 {
@@ -91,24 +94,57 @@ namespace IdentityServer
                     CheckSameSite(cookieContext.Context, cookieContext.CookieOptions);
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsApi",
+                    builder => 
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
+            });
 
+
+            builder.Services.Configure<SecurityStampValidatorOptions>(opts =>
+            {
+                opts.OnRefreshingPrincipal = SecurityStampValidatorCallback.UpdatePrincipal;
+            });
+
+
+
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultScheme = "Cookies";
+            //    options.DefaultChallengeScheme = "oidc";
+            //})
+            //.AddCookie("Cookies")
+            //.AddOpenIdConnect("oidc", options =>
+            //{
+            //    options.Authority = "https://localhost:5001";
+            //    options.ClientId = "pcke_client";
+            //    options.ClientSecret = "secret";
+            //    options.ResponseType = "code";
+            //    options.UsePkce = true;
+            //    options.SaveTokens = true;
+            //    options.Scope.Add("api1");
+
+            //});
 
             services.AddAuthentication(options =>
             {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
                 options.DefaultScheme = "Cookies";
                 options.DefaultChallengeScheme = "oidc";
             })
-            .AddCookie("Cookies")
+            .AddCookie()
             .AddOpenIdConnect("oidc", options =>
             {
                 options.Authority = "https://localhost:5001";
-                options.ClientId = "pcke_client";
-                options.ClientSecret = "secret";
-                options.ResponseType = "code";
-                options.UsePkce = true;
+                options.ClientId = "mvc";
+                options.SignInScheme = "Cookies";
                 options.SaveTokens = true;
-                options.Scope.Add("api1");
-
+                options.RequireHttpsMetadata = false;
             });
 
             // not recommended for production - you need to store your key material somewhere secure
@@ -117,17 +153,17 @@ namespace IdentityServer
 
         public void Configure(IApplicationBuilder app)
         {
-            if (Environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
 
             // uncomment if you want to add MVC
             app.UseSession();
             app.UseStaticFiles();
             app.UseRouting();
 
-            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
+            app.UseCookiePolicy(new CookiePolicyOptions {
+                HttpOnly = HttpOnlyPolicy.None,
+                MinimumSameSitePolicy = SameSiteMode.None,
+                Secure = CookieSecurePolicy.Always
+            });
 
             app.UseIdentityServer();
 
@@ -136,6 +172,9 @@ namespace IdentityServer
 
                 await next();
             });
+
+
+            app.UseCors("CorsApi");
 
             // uncomment, if you want to add MVC
             app.UseAuthorization();
